@@ -54,11 +54,14 @@ app.get("/stripe-config",(req,res)=>res.json({publishableKey:process.env.STRIPE_
 
 
 app.post("/create-payment-intent", async function(req,res){
+try {
 const amount=Number(req.body.amount);
 if(!Number.isFinite(amount) || amount<=0) return res.status(400).json({error:"Suma invalida"});
+if(amount>100000) return res.status(400).json({error:"Suma prea mare"});
 const amountPence=Math.round(amount*100);
 const paymentIntent=await stripe.paymentIntents.create({amount:amountPence,currency:"gbp"});
 res.json({clientSecret:paymentIntent.client_secret});
+} catch(error) { console.error(error.message); return res.status(500).json({error:"Eroare la procesarea platii"}); }
 });
 
 
