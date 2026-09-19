@@ -22,7 +22,7 @@ button{margin-top:20px;padding:20px;font-size:22px;width:90%}
 <div class="box">
 <h1>Plată cu cardul</h1>
 <h2>Introdu suma</h2>
-<input id="amount" type="number" step="0.01" placeholder="£0.00"><button onclick="pay()">💳 CONTINUĂ LA PLATĂ</button>
+<input id="amount" type="number" step="0.01" placeholder="£0.00"><button id="pay-button" onclick="pay()">💳 CONTINUĂ LA PLATĂ</button>
 <div id="payment-element"></div>
 <button id="confirm-payment" onclick="confirmPayment()" style="display:none">✅ CONFIRMĂ PLATA</button>
 </div>
@@ -30,8 +30,9 @@ button{margin-top:20px;padding:20px;font-size:22px;width:90%}
 <script>
 let stripeInstance,elementsInstance;
 async function pay(){
+document.getElementById("pay-button").disabled=true;
 const amount=document.getElementById("amount").value;
-if(!amount || Number(amount)<=0){alert("Introdu o sumă.");return;}
+if(!amount || Number(amount)<=0){alert("Introdu o sumă.");document.getElementById("pay-button").disabled=false;return;}
 const config=await fetch("/stripe-config").then(r=>r.json());
 stripeInstance=Stripe(config.publishableKey);
 const data=await fetch("/create-payment-intent",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({amount:Number(amount)})}).then(r=>r.json());
